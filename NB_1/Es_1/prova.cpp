@@ -18,10 +18,15 @@ using namespace std;
 
 float error(float AV1, float AV2, int n){
 
-	if(n==0)
-		return 0;
-	else
-		return sqrt( (AV1- (AV2)*(AV2) )/ n );
+	if(n==0){
+		cout << "caso in cui n==0"<< endl;
+      return 0;
+
+   }
+	else{
+      cout<< "n: "<< n <<endl;
+		return sqrt( (AV2- pow(AV1, 2) )/ n);
+   }
 
 }
  
@@ -51,8 +56,8 @@ int main (int argc, char *argv[]){
    } else cerr << "PROBLEM: Unable to open seed.in" << endl;
 
 
-int N_blocks = 50; //numero blocchi (i blocchi sono intesi in una maniera diversa da quelli che intende il prof)
-int N_trows = 200; //numero lanci per ogni blocco
+int N_blocks = 100; //numero blocchi (i blocchi sono intesi in una maniera diversa da quelli che intende il prof)
+int N_trows = 1000; //numero lanci per ogni blocco
 float summ = 0;
 float summ2 = 0; //somma dei quadrati
 float provvisoria;
@@ -72,7 +77,7 @@ float ave2_block[N_blocks];
             summ2 = summ2 + provvisoria*provvisoria;
         }
         ave_block[j] = summ / N_trows;
-        ave2_block[j] = summ2 / N_trows;
+        ave2_block[j] = pow(ave_block[j], 2);                                 // sabgliato  summ2 / N_trows;
 		summ = 0;
       summ2=0;
    } 
@@ -89,22 +94,28 @@ float ave2_block[N_blocks];
    	for(int i = 0; i < N_blocks; i++){
    	
    			sum_ave_prog = sum_ave_prog + ave_block[i];
-   			cout << " ---" << ave_block[i] << endl;
    			sum_ave2_prog = sum_ave2_prog + ave2_block[i];
-   			
    			
    			ave_prog[i] = sum_ave_prog / (i+1);
    			ave2_prog[i] = sum_ave2_prog / (i+1);
-   			error_prog[i] = error ( ave_prog[i], ave_prog[i], i);
+            cout<<"error 1 : "<< error ( ave_prog[i], ave2_prog[i], i+1);
+   			error_prog[i] = error ( ave_prog[i], ave2_prog[i], i);
    			
    		cout << "media cumulativa " << ave_prog[i] << endl;
    		cout << "media quadra cumulativa " << ave2_prog[i] << endl;
    		cout << "errore sulla media " << error_prog[i] << endl;
    		cout << i << endl;
-   		
    		}
    
-   
+   ofstream myfile;
+   myfile.open("data.txt");
+
+   for (int i=0; i<N_blocks;i++) {
+      myfile<< N_trows*(1+i) << " " << ave_prog[i]  << " " << error_prog[i] <<endl;
+   }
+   myfile.close();
+
+
    rnd.SaveSeed();
    return 0;
 }

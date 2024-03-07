@@ -39,13 +39,10 @@ int main (int argc, char *argv[]){
       input.close();
    } else cerr << "PROBLEM: Unable to open seed.in" << endl;
 
-	for(int i=1;i<3;i++){
+   for(int i=0; i<20; i++){
       cout << rnd.Rannyu() << endl;
-      cout << rnd.Rannyu() << endl;
-      cout << rnd.Rannyu() << endl;
-      cout << rnd.Rannyu() << endl;
-      cout << rnd.Rannyu() << endl;
-	}
+   }
+
    rnd.SaveSeed();
    return 0;
 }
