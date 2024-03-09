@@ -8,6 +8,6 @@ main.o : main.cpp
 random.o : random.cpp random.h
 	$(CC) -c random.cpp -o random.o $(CFLAGS)
 clean :
-	rm *.o main.exe seed.out
+	rm *.o main seed.out
 
 .PHONY: clean

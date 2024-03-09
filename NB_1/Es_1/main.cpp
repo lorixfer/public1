@@ -2,13 +2,13 @@
 #include <fstream>
 #include <string>
 #include "random.h"
+#include <cmath>
 
 using namespace std;
 
+Random setted_random(){
 
-int main(){
-
-    Random rnd; 
+    Random rnd;
 
 // Fixing random seed to allow reproducibility
 
@@ -39,7 +39,7 @@ int main(){
             input >> property;
             if ( property == "RANDOMSEED"){
                 input >> seed[0] >> seed[1] >> seed[2] >> seed[3];
-                rnd.SetRandom( seed, p1 , p2 );              //call of the function to set the seed
+                rnd.SetRandom( seed, p1 , p2 );           //call of the function to set the seed
             }
         }
         input.close();
@@ -49,11 +49,86 @@ int main(){
 // same (pseudo)random sequence every time I lounch the 
 // program.
 
+    return rnd;
+    
+}
 
-    cout << rnd.Rannyu() <<endl;
-    cout << rnd.Rannyu() <<endl;
-    cout << rnd.Rannyu() <<endl;
+double error(double AV1, double AV2, int n){
 
+	if(n==0){
+      return 0;
+
+   }
+	else{
+		return sqrt( (AV2- pow(AV1, 2) )/ n);
+   }
+
+}
+
+int main(){
+    
+    Random rnd;
+    rnd = setted_random();
+
+// dichiarazione numero di blocchi e numero di lanci per blocco
+// che verranno eseguiti
+
+    int N_blocks = 1000;
+    int N_trows_for_block = 100000;
+    double ave_block[N_blocks];
+    double ave2_block[N_blocks];
+
+//riempimento degli arrei con le medie e i quadrati delle
+//medie per ogni blocco.
+    
+    double sum;
+    for (int i = 0 ; i < N_blocks ; i++ ){
+        sum = 0;
+        for ( int j = 0 ; j < N_trows_for_block ; j++){
+            sum = sum + rnd.Rannyu();
+        }
+        ave_block[i] = sum / N_trows_for_block;                //calcolo del valore medio del blocco
+        ave2_block[i] = pow( ave_block[i], 2);
+    }
+
+//calcolo della media e dell'errore cumulativi per la 
+//successione dei valori di media trovati precedentemente
+//per gli N_blocchi separatamente.
+
+    double sum_ave_prog;
+    double sum_ave2_prog;
+    double ave_cumul[N_blocks];
+    double ave2_cumul[N_blocks];
+    double error_cumul[N_blocks];
+
+    sum_ave_prog = 0;
+    sum_ave2_prog = 0;
+
+    for(int i = 0 ; i < N_blocks ; i++){
+
+        sum_ave_prog = sum_ave_prog + ave_block[i];
+        sum_ave2_prog = sum_ave2_prog + ave2_block[i];
+        ave_cumul[i] = sum_ave_prog / double(i+1);
+        ave2_cumul[i] = sum_ave2_prog / double(i+1);
+        error_cumul[i] = error(ave_cumul[i], ave2_cumul[i], i);
+
+    }
+
+//creation of the file data.txt with 
+// #trows cumulative_avarage error_on_cumulative_avarage
+//this file will be red by the programm 
+
+    ofstream myfile;
+    myfile.open("data.txt");
+
+    for (int i=0; i<N_blocks ; i++ ) {
+        myfile << N_trows_for_block*(i+1) << " " << ave_cumul[i] << " " << error_cumul[i] << endl;
+    }
+    myfile.close();
+
+//saveing seed (optionale)
     rnd.SaveSeed();
 
+
+    return 0;
 }
