@@ -70,25 +70,37 @@ int main(){
     Random rnd;
     rnd = setted_random();
 
+//es 10.1
+
 // dichiarazione numero di blocchi e numero di lanci per blocco
 // che verranno eseguiti
 
-    int N_blocks = 1000;
-    int N_trows_for_block = 100000;
+    int N_blocks = 100;
+    int N_trows_for_block = 1000;
     double ave_block[N_blocks];
     double ave2_block[N_blocks];
+    double delta_sigma_ave_block[N_blocks];
+    double delta2_sigma_ave_block[N_blocks];
 
 //riempimento degli arrei con le medie e i quadrati delle
 //medie per ogni blocco.
     
     double sum;
+    double sum2;
+    double provv;
+
     for (int i = 0 ; i < N_blocks ; i++ ){
         sum = 0;
+        sum2 = 0;
         for ( int j = 0 ; j < N_trows_for_block ; j++){
-            sum = sum + rnd.Rannyu();
+            provv = rnd.Rannyu();                               //generazione variabile random
+            sum = sum + provv;                                  //accumulazione valori random
+            sum2 = sum2 + pow( provv-0.5 , 2 );            //accumulazione quadrati differenza random - 0.5 (ovvero la media)
         }
         ave_block[i] = sum / N_trows_for_block;                //calcolo del valore medio del blocco
         ave2_block[i] = pow( ave_block[i], 2);
+        delta_sigma_ave_block[i] = sum2 / N_trows_for_block;   //array con tutte le delta sigma al quadrato
+        delta2_sigma_ave_block[i] = pow( delta_sigma_ave_block[i], 2 );
     }
 
 //calcolo della media e dell'errore cumulativi per la 
@@ -97,20 +109,34 @@ int main(){
 
     double sum_ave_prog;
     double sum_ave2_prog;
+    double sum_delta_segma_ave_prog;
+    double sum_delta2_segma_ave_prog;
     double ave_cumul[N_blocks];
     double ave2_cumul[N_blocks];
     double error_cumul[N_blocks];
+    double delta_sigma_ave_cumul[N_blocks];
+    double delta2_sigma_ave_cumul[N_blocks];
+    double error_cumul_delta_sigma[N_blocks];
 
     sum_ave_prog = 0;
     sum_ave2_prog = 0;
+    sum_delta_segma_ave_prog = 0;
+    sum_delta2_segma_ave_prog = 0;
 
     for(int i = 0 ; i < N_blocks ; i++){
 
         sum_ave_prog = sum_ave_prog + ave_block[i];
         sum_ave2_prog = sum_ave2_prog + ave2_block[i];
+        sum_delta_segma_ave_prog = sum_delta_segma_ave_prog + delta_sigma_ave_block[i];
+        sum_delta2_segma_ave_prog = sum_delta2_segma_ave_prog + delta2_sigma_ave_block[i]; 
+
         ave_cumul[i] = sum_ave_prog / double(i+1);
         ave2_cumul[i] = sum_ave2_prog / double(i+1);
+        delta_sigma_ave_cumul[i] = sum_delta_segma_ave_prog / double(i+1);
+        delta2_sigma_ave_cumul[i] = sum_delta2_segma_ave_prog / double(i+1);
+
         error_cumul[i] = error(ave_cumul[i], ave2_cumul[i], i);
+        error_cumul_delta_sigma[i] = error( delta_sigma_ave_cumul[i] , delta2_sigma_ave_cumul[i] , i);
 
     }
 
@@ -126,7 +152,16 @@ int main(){
     }
     myfile.close();
 
+    ofstream myfile2;
+    myfile.open("data2.txt");
+
+    for (int i=0; i<N_blocks ; i++ ) {
+        myfile << N_trows_for_block*(i+1) << " " << delta_sigma_ave_cumul[i] << " " << error_cumul_delta_sigma[i] << endl;
+    }
+    myfile.close();
+
 //saveing seed (optionale)
+
     rnd.SaveSeed();
 
 
