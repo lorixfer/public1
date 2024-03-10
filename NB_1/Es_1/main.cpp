@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <ostream>
 #include <string>
 #include "random.h"
 #include <cmath>
@@ -69,6 +70,7 @@ int main(){
     
     Random rnd;
     rnd = setted_random();
+
 
 //es 10.1
 
@@ -159,6 +161,41 @@ int main(){
         myfile << N_trows_for_block*(i+1) << " " << delta_sigma_ave_cumul[i] << " " << error_cumul_delta_sigma[i] << endl;
     }
     myfile.close();
+
+
+    //now i will perform a chi-squared test to verify the linear distribution in this way
+    //generation of first 10^4 preudo-random number
+    //count of the number in the range (0 , 1/ 100) 
+    //calculating chi-squared_1 ( n_in_range - expected )^2 / expected
+    //generation of second 10^4 pseudo-random number
+    //count of the number in the range (1/100 , 2/ 100)
+    //calculating chi-squared_2 ( n_in_range - expected )^2 / expected
+    // ----repeat the procedure for 100 times -----
+    //obtaining the chi-squared by summing all the chi-squared_i.
+
+    rnd = setted_random();
+
+    int n_trows = 10000;
+    int M_intervals = 100;
+    double avarage_intervals;
+    double provvisoria;
+    double chi_squared = 0;
+    int count;
+
+    avarage_intervals = double(n_trows) / double(M_intervals);
+
+    for (int i = 0 ; i < M_intervals ; i++ ) {
+        count=0;
+        for (int j = 0 ; j<n_trows ; j++) {
+            provvisoria = rnd.Rannyu();
+            if (provvisoria > double(i)/double(M_intervals) && provvisoria < double(i+1)/double(M_intervals)) {
+                count++;
+            }
+        }
+        chi_squared = chi_squared + pow(double(count) - avarage_intervals , 2) / avarage_intervals ;
+    } 
+
+    cout << "il vlore del chiquadro calcolato è: " << chi_squared << endl;
 
 //saveing seed (optionale)
 
