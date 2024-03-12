@@ -155,12 +155,12 @@ int main(){
     myfile.close();
 
     ofstream myfile2;
-    myfile.open("data2.txt");
+    myfile2.open("data2.txt");
 
     for (int i=0; i<N_blocks ; i++ ) {
-        myfile << N_trows_for_block*(i+1) << " " << delta_sigma_ave_cumul[i] << " " << error_cumul_delta_sigma[i] << endl;
+        myfile2 << N_trows_for_block*(i+1) << " " << delta_sigma_ave_cumul[i] << " " << error_cumul_delta_sigma[i] << endl;
     }
-    myfile.close();
+    myfile2.close();
 
 
     //now i will perform a chi-squared test to verify the linear distribution in this way
@@ -180,6 +180,8 @@ int main(){
     double avarage_intervals;
     double provvisoria;
     double chi_squared = 0;
+    double chi_squared_i = 0;
+    double isto_chi_squared[M_intervals];
     int count;
 
     avarage_intervals = double(n_trows) / double(M_intervals);
@@ -192,8 +194,19 @@ int main(){
                 count++;
             }
         }
-        chi_squared = chi_squared + pow(double(count) - avarage_intervals , 2) / avarage_intervals ;
-    } 
+
+        chi_squared_i = pow(double(count) - avarage_intervals , 2) / avarage_intervals ;
+        isto_chi_squared[i] = chi_squared_i ;
+        chi_squared = chi_squared + chi_squared_i ;
+    }
+    
+    ofstream myfile3;
+    myfile3.open("isto_chi_squared.txt");
+    for (int i = 0 ; i<M_intervals ; i++ ) {
+        myfile3 << isto_chi_squared[i] << endl;
+    }
+    myfile3.close();
+
 
     cout << "il vlore del chiquadro calcolato è: " << chi_squared << endl;
 

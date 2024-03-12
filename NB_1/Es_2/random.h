@@ -33,9 +33,11 @@ public:
   // Method to generate a random number in the range [min,max)
   double Rannyu(double min, double max);
   // Method to generate a random number with a Gaussian distribution
-  double Gass(double mean, double sigma);
+  double Gauss(double mean, double sigma);
   // Method to generate a random number with an Exponential distribution
   double Expo(double mean);
+  // Method to generate a random number with a Cauchy-Lorentz distribution
+  double CaLo(double mean , double sigma);
   
 };
 
