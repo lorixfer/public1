@@ -80,55 +80,88 @@ int main(){
     // x_i = variabile dandom distribuita linearmente , esponenzialmente , CL
     // S_N = sommma di 1000 variabili x_i della stessa distribuzione 
 
-    cout <<"inizio esercizio"<<endl;
-
     int N[] = {1 , 2 , 10 , 100};
-    int n_sample = 10;
+    int n_sample = 10000;
     string s[] = { "Lin" , "Exp" , "C_L"};
     string name_file;
     string file_ext = ".txt";
     double S_N = 0;
     double summ;
 
-    for( int n=0 ; n < int(sizeof(N)) ; n++ ){
+    //declaration of mean ando others quantity for the distribution
+    double lambda = 1;
+    double C_L_mu = 0;
+    double C_L_Gamma = 1;
 
-        cout <<"entro nel primo for N[n]= "<< N[n]<<endl;
-        name_file = s[0] + to_string(N[n]) + file_ext ;        
+
+
+    ofstream myfile;
+
+    //the strange expression is because sizeof(N) return the size in byte of
+    //the array, so it has to be divided by the size of the data type it contain.
+    for( int n=0 ; n < int (sizeof(N) / sizeof(int)) ; n++ ){  
+
+        name_file = s[0] + to_string(N[n]) + file_ext ;        //declaration of name of file in the fation Lin #number_summed .txt
+        myfile.open( name_file );
 
         for (int i = 0 ; i < n_sample ; i++ ) {
-            cout <<"entro nel secondo for"<<endl;
             summ = 0;
 
             for (int j = 0 ; j<N[n] ; j++ ) {
-                cout <<"sto sommando"<<endl;
-                summ = summ + rnd.Rannyu();
+                summ = summ + rnd.Rannyu();     //summing in N[n] random variables
             }
             S_N = summ / N[n];
 
-            ofstream myfile;
-            myfile.open( name_file );
-            myfile << S_N << endl; 
-            myfile.close();
+            myfile << S_N << endl;      //writing the result in the file
         }
+        
+        myfile.close();                 //closure of the file 
 
-        cout<<"fine secondo for"<<endl;
     }
 
-    // for ( int i = 0 ; i < int ( sizeof(N) ); i++ ) {
-    //     name_file = s[i] + to_string(N[i]) + file_ext ;
-    //     for ( int j = 0 ; j<n ; j++ ) {
-    //         for(int l = 0 ; l < N[i] ; l++){
-    //             summ = summ + rnd.Rannyu();
-    //         }
-    //         S_N = summ / N[i] ; //media N_esima
-    //         //mo devo scrivere questo risultato su un fil
-    //         ofstream myfile;
-    //         myfile.open( name_file );
-    //         myfile << S_N << endl; 
-    //         myfile.close();
-    //     }
-    // }
 
+    //the strange expression is because sizeof(N) return the size in byte of
+    //the array, so it has to be divided by the size of the data type it contain.
+    for( int n=0 ; n < int (sizeof(N) / sizeof(int)) ; n++ ){  
+
+        name_file = s[1] + to_string(N[n]) + file_ext ;        //declaration of name of file in the fation Expo #number_summed .txt
+        myfile.open( name_file );
+
+        for (int i = 0 ; i < n_sample ; i++ ) {
+            summ = 0;
+
+            for (int j = 0 ; j<N[n] ; j++ ) {
+                summ = summ + rnd.Expo(lambda);     //summing in N[n] random variables
+            }
+            S_N = summ / N[n];
+
+            myfile << S_N << endl;      //writing the result in the file
+        }
+        
+        myfile.close();                 //closure of the file 
+    }
+
+
+    //the strange expression is because sizeof(N) return the size in byte of
+    //the array, so it has to be divided by the size of the data type it contain.
+    for( int n=0 ; n < int (sizeof(N) / sizeof(int)) ; n++ ){  
+
+        name_file = s[2] + to_string(N[n]) + file_ext ;        //declaration of name of file in the fation CaLo #number_summed .txt
+        myfile.open( name_file );
+
+        for (int i = 0 ; i < n_sample ; i++ ) {
+            summ = 0;
+
+            for (int j = 0 ; j<N[n] ; j++ ) {
+                summ = summ + rnd.CaLo(C_L_mu, C_L_Gamma);     //summing in N[n] random variables
+            }
+            S_N = summ / N[n];
+
+            myfile << S_N << endl;      //writing the result in the file
+        }
+        
+        myfile.close();                 //closure of the file 
+    }
 
     return 0;
 }
